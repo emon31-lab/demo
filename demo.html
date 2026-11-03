@@ -1,0 +1,1926 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, maximum-scale=1.0, user-scalable=no">
+<meta name="theme-color" content="#04120c">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<title>Registration · House Cricket 2.0</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+  /* ============================================================
+     RESET & TOKENS
+     ============================================================ */
+  *, *::before, *::after {
+    margin: 0; padding: 0; box-sizing: border-box;
+    -webkit-tap-highlight-color: transparent;
+    -webkit-backface-visibility: hidden;
+    backface-visibility: hidden;
+  }
+
+  :root {
+    --bg:          #04120c;
+    --bg-2:        #071f16;
+    --surface:     rgba(255,255,255,0.045);
+    --surface-2:   rgba(255,255,255,0.07);
+    --surface-3:   rgba(255,255,255,0.10);
+    --border:      rgba(255,255,255,0.09);
+    --border-hi:   rgba(255,255,255,0.18);
+    --border-act:  rgba(52,211,153,0.55);
+
+    --accent:      #10b981;
+    --accent-lt:   #34d399;
+    --accent-glow: rgba(52,211,153,0.4);
+    --gold:        #fbbf24;
+    --danger:      #ff8a9b;
+
+    --text:        #ffffff;
+    --text-dim:    rgba(255,255,255,0.70);
+    --text-mute:   rgba(255,255,255,0.42);
+
+    --r-lg: 22px;
+    --r-md: 16px;
+    --r-sm: 12px;
+
+    --ease:     cubic-bezier(0.32, 0.72, 0, 1);
+    --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+    --spring:   cubic-bezier(0.34, 1.56, 0.64, 1);
+  }
+
+  html {
+    -webkit-text-size-adjust: 100%;
+    overscroll-behavior: none;
+  }
+  html, body { height: 100%; }
+
+  body {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+    background: #000;
+    color: var(--text);
+    display: flex;
+    justify-content: center;
+    height: 100vh;
+    height: 100dvh;
+    overflow: hidden;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
+  }
+
+  /* ============================================================
+     APP SHELL
+     ============================================================ */
+  .app {
+    position: relative;
+    width: 100%;
+    max-width: 460px;
+    height: 100vh;
+    height: 100dvh;
+    display: flex;
+    flex-direction: column;
+    background:
+      radial-gradient(circle at 20% 0%, rgba(16,185,129,0.10) 0%, transparent 55%),
+      radial-gradient(circle at 80% 100%, rgba(251,191,36,0.06) 0%, transparent 55%),
+      linear-gradient(180deg, #061a12 0%, var(--bg) 50%, #030a07 100%);
+    overflow: hidden;
+    box-shadow: 0 0 120px rgba(16,185,129,0.06);
+    isolation: isolate;
+  }
+
+  .app::before,
+  .app::after {
+    content: "";
+    position: absolute;
+    border-radius: 50%;
+    filter: blur(80px);
+    z-index: -1;
+    pointer-events: none;
+    will-change: transform;
+  }
+  .app::before {
+    width: 380px; height: 380px;
+    background: radial-gradient(circle, rgba(16,185,129,0.30), transparent 70%);
+    top: -180px; left: -120px;
+    animation: floatA 20s var(--ease) infinite;
+  }
+  .app::after {
+    width: 320px; height: 320px;
+    background: radial-gradient(circle, rgba(251,191,36,0.15), transparent 70%);
+    bottom: -140px; right: -100px;
+    animation: floatB 24s var(--ease) infinite;
+  }
+  @keyframes floatA {
+    0%,100% { transform: translate3d(0,0,0) scale(1); }
+    50%     { transform: translate3d(40px,50px,0) scale(1.2); }
+  }
+  @keyframes floatB {
+    0%,100% { transform: translate3d(0,0,0) scale(1); }
+    50%     { transform: translate3d(-40px,-30px,0) scale(1.15); }
+  }
+
+  .icon {
+    width: 20px; height: 20px;
+    flex-shrink: 0;
+    stroke: currentColor;
+    fill: none;
+    stroke-width: 2;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    display: inline-block;
+    vertical-align: middle;
+  }
+
+  /* ============================================================
+     APP BAR
+     ============================================================ */
+  .app-bar {
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 12px 16px;
+    padding-top: calc(12px + env(safe-area-inset-top));
+    background: linear-gradient(180deg, rgba(4,18,12,0.98) 0%, rgba(4,18,12,0.88) 100%);
+    backdrop-filter: blur(24px) saturate(180%);
+    -webkit-backdrop-filter: blur(24px) saturate(180%);
+    z-index: 30;
+  }
+
+  .icon-btn {
+    width: 38px; height: 38px;
+    display: grid; place-items: center;
+    border-radius: 11px;
+    background: rgba(255,255,255,0.05);
+    border: 1px solid rgba(255,255,255,0.08);
+    color: var(--text-dim);
+    cursor: pointer;
+    transition: all 0.25s var(--ease);
+    flex-shrink: 0;
+  }
+  .icon-btn:hover {
+    background: rgba(255,255,255,0.09);
+    color: var(--text);
+    border-color: rgba(255,255,255,0.14);
+  }
+  .icon-btn:active { transform: scale(0.94); }
+  .icon-btn:disabled {
+    opacity: 0;
+    pointer-events: none;
+  }
+
+  .app-title {
+    flex: 1;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    gap: 1px;
+    min-width: 0;
+  }
+  .app-title .t-main {
+    font-size: 15px;
+    font-weight: 700;
+    color: var(--text);
+    letter-spacing: -0.01em;
+  }
+  .app-title .t-sub {
+    font-size: 10px;
+    font-weight: 600;
+    color: var(--accent-lt);
+    letter-spacing: 1.4px;
+    text-transform: uppercase;
+  }
+
+  .step-pill {
+    padding: 7px 12px;
+    border-radius: 100px;
+    background: rgba(52,211,153,0.10);
+    border: 1px solid rgba(52,211,153,0.24);
+    color: var(--accent-lt);
+    font-size: 11.5px;
+    font-weight: 700;
+    letter-spacing: 0.3px;
+    transition: all 0.4s var(--ease);
+    flex-shrink: 0;
+    min-width: 52px;
+    text-align: center;
+  }
+  .step-pill.complete {
+    background: linear-gradient(135deg, var(--accent), var(--accent-lt));
+    color: #04120c;
+    border-color: transparent;
+    box-shadow: 0 0 18px var(--accent-glow);
+  }
+
+  /* ============================================================
+     PROGRESS TRACK
+     ============================================================ */
+  .progress-track {
+    flex-shrink: 0;
+    height: 2px;
+    background: rgba(255,255,255,0.05);
+    overflow: hidden;
+    position: relative;
+    z-index: 29;
+  }
+  .progress-fill {
+    height: 100%;
+    width: 25%;
+    background: linear-gradient(90deg, var(--accent), var(--accent-lt), var(--gold));
+    border-radius: 0 2px 2px 0;
+    box-shadow: 0 0 12px var(--accent-glow);
+    transition: width 0.6s var(--ease-out);
+    will-change: width;
+  }
+
+  /* ============================================================
+     SCREENS
+     ============================================================ */
+  .screens {
+    flex: 1;
+    min-height: 0;
+    overflow-y: auto;
+    overflow-x: hidden;
+    position: relative;
+    scrollbar-width: none;
+    -webkit-overflow-scrolling: touch;
+    overscroll-behavior: contain;
+  }
+  .screens::-webkit-scrollbar { display: none; }
+
+  .screen {
+    display: none;
+    padding: 24px 18px 20px;
+    min-height: 100%;
+    animation-fill-mode: both;
+  }
+  .screen.active { display: block; }
+  .screen.slide-right { animation: slideRight 0.42s var(--ease-out); }
+  .screen.slide-left  { animation: slideLeft 0.42s var(--ease-out); }
+
+  @keyframes slideRight {
+    from { opacity: 0; transform: translate3d(30px, 0, 0); }
+    to   { opacity: 1; transform: translate3d(0, 0, 0); }
+  }
+  @keyframes slideLeft {
+    from { opacity: 0; transform: translate3d(-30px, 0, 0); }
+    to   { opacity: 1; transform: translate3d(0, 0, 0); }
+  }
+
+  /* ============================================================
+     SCREEN HEADER
+     ============================================================ */
+  .screen-head {
+    margin-bottom: 24px;
+    animation: fadeUp 0.6s var(--ease-out) both;
+  }
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translate3d(0, 14px, 0); }
+    to   { opacity: 1; transform: translate3d(0, 0, 0); }
+  }
+
+  .eyebrow {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 5px 10px;
+    border-radius: 100px;
+    background: rgba(52,211,153,0.10);
+    border: 1px solid rgba(52,211,153,0.22);
+    color: var(--accent-lt);
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 1.3px;
+    text-transform: uppercase;
+    margin-bottom: 12px;
+  }
+
+  .screen-head h1 {
+    font-size: 27px;
+    font-weight: 800;
+    line-height: 1.15;
+    letter-spacing: -0.02em;
+    color: var(--text);
+    margin-bottom: 6px;
+  }
+  .screen-head h1 .accent {
+    background: linear-gradient(135deg, var(--accent-lt) 0%, var(--gold) 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+  .screen-head p {
+    font-size: 13.5px;
+    color: var(--text-dim);
+    font-weight: 400;
+    line-height: 1.5;
+  }
+
+  /* ============================================================
+     TEAM GRID
+     ============================================================ */
+  .team-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    margin-bottom: 6px;
+  }
+
+  .team-card {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+    padding: 16px 14px;
+    border-radius: var(--r-md);
+    background: rgba(255,255,255,0.035);
+    border: 1px solid rgba(255,255,255,0.07);
+    cursor: pointer;
+    text-align: left;
+    transition: all 0.35s var(--ease);
+    overflow: hidden;
+    font-family: inherit;
+    color: inherit;
+    will-change: transform;
+  }
+  .team-card::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(circle at 50% 0%, var(--team-color, rgba(52,211,153,0.15)) 0%, transparent 70%);
+    opacity: 0;
+    transition: opacity 0.4s var(--ease);
+    pointer-events: none;
+  }
+  .team-card:hover {
+    border-color: rgba(255,255,255,0.14);
+    background: rgba(255,255,255,0.055);
+    transform: translate3d(0, -2px, 0);
+  }
+  .team-card:active {
+    transform: translate3d(0, 0, 0) scale(0.97);
+    transition-duration: 0.1s;
+  }
+  .team-card.selected {
+    border-color: var(--team-color-border, rgba(52,211,153,0.5));
+    background: rgba(255,255,255,0.07);
+    box-shadow:
+      0 8px 24px -8px var(--team-color-shadow, rgba(52,211,153,0.4)),
+      inset 0 0 0 1px var(--team-color-border, rgba(52,211,153,0.4));
+  }
+  .team-card.selected::before { opacity: 1; }
+
+  .crest {
+    width: 42px; height: 42px;
+    display: grid; place-items: center;
+    border-radius: 12px;
+    background: linear-gradient(135deg, var(--team-color-bg, rgba(52,211,153,0.20)), transparent);
+    border: 1px solid var(--team-color-border, rgba(52,211,153,0.3));
+    color: var(--team-color-icon, var(--accent-lt));
+    transition: all 0.4s var(--ease);
+    position: relative;
+    z-index: 1;
+  }
+  .crest .icon { width: 22px; height: 22px; stroke-width: 2; }
+
+  .team-card.selected .crest {
+    background: var(--team-color-bg, linear-gradient(135deg, rgba(52,211,153,0.35), rgba(52,211,153,0.15)));
+    color: var(--team-color-icon, var(--accent-lt));
+    box-shadow: 0 0 20px var(--team-color-shadow, rgba(52,211,153,0.4));
+    transform: scale(1.05);
+  }
+
+  .team-meta {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+  .team-name {
+    font-size: 13.5px;
+    font-weight: 700;
+    color: var(--text);
+    letter-spacing: -0.01em;
+    line-height: 1.2;
+  }
+  .team-count {
+    font-size: 10.5px;
+    font-weight: 500;
+    color: var(--text-mute);
+    letter-spacing: 0.2px;
+  }
+
+  /* Team color variables */
+  .team-card[data-team="Tigers"] {
+    --team-color: rgba(249,115,22,0.20);
+    --team-color-bg: linear-gradient(135deg, rgba(249,115,22,0.22), transparent);
+    --team-color-border: rgba(249,115,22,0.4);
+    --team-color-icon: #f97316;
+    --team-color-shadow: rgba(249,115,22,0.4);
+  }
+  .team-card[data-team="Royals"] {
+    --team-color: rgba(168,85,247,0.20);
+    --team-color-bg: linear-gradient(135deg, rgba(168,85,247,0.22), transparent);
+    --team-color-border: rgba(168,85,247,0.4);
+    --team-color-icon: #a855f7;
+    --team-color-shadow: rgba(168,85,247,0.4);
+  }
+  .team-card[data-team="Warriors"] {
+    --team-color: rgba(239,68,68,0.20);
+    --team-color-bg: linear-gradient(135deg, rgba(239,68,68,0.22), transparent);
+    --team-color-border: rgba(239,68,68,0.4);
+    --team-color-icon: #ef4444;
+    --team-color-shadow: rgba(239,68,68,0.4);
+  }
+  .team-card[data-team="Kings"] {
+    --team-color: rgba(234,179,8,0.20);
+    --team-color-bg: linear-gradient(135deg, rgba(234,179,8,0.22), transparent);
+    --team-color-border: rgba(234,179,8,0.4);
+    --team-color-icon: #eab308;
+    --team-color-shadow: rgba(234,179,8,0.4);
+  }
+
+  /* ============================================================
+     PLAYER SECTION (reveals after team pick)
+     ============================================================ */
+  .player-section {
+    display: none;
+    margin-top: 24px;
+  }
+  .player-section.visible {
+    display: block;
+    animation: slideUp 0.5s var(--ease-out);
+  }
+  @keyframes slideUp {
+    from { opacity: 0; transform: translate3d(0, 16px, 0); }
+    to   { opacity: 1; transform: translate3d(0, 0, 0); }
+  }
+
+  .section-label {
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--text-mute);
+    text-transform: uppercase;
+    letter-spacing: 1.2px;
+    margin-bottom: 10px;
+    padding-left: 4px;
+  }
+
+  /* ============================================================
+     iOS 26 WHEEL PICKER
+     ============================================================ */
+  .wheel {
+    position: relative;
+    height: 180px;
+    border-radius: var(--r-md);
+    background:
+      radial-gradient(ellipse at 50% 50%, rgba(255,255,255,0.04) 0%, transparent 70%),
+      rgba(0,0,0,0.24);
+    border: 1px solid rgba(255,255,255,0.06);
+    overflow: hidden;
+    perspective: 700px;
+    perspective-origin: center center;
+    transition: border-color 0.3s var(--ease), box-shadow 0.3s var(--ease);
+    contain: layout style;
+    -webkit-user-select: none;
+    user-select: none;
+  }
+  .wheel.compact { height: 138px; }
+
+  .wheel:hover { border-color: rgba(255,255,255,0.10); }
+  .wheel:focus-within {
+    border-color: rgba(52,211,153,0.35);
+    box-shadow: 0 0 0 3px rgba(52,211,153,0.08);
+  }
+
+  .wheel-scroll {
+    height: 100%;
+    width: 100%;
+    overflow-y: scroll;
+    overflow-x: hidden;
+    scroll-snap-type: y mandatory;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+    -webkit-overflow-scrolling: touch;
+    overscroll-behavior: contain;
+    position: relative;
+    -webkit-mask-image: linear-gradient(to bottom,
+      transparent 0%, black 22%, black 78%, transparent 100%);
+    mask-image: linear-gradient(to bottom,
+      transparent 0%, black 22%, black 78%, transparent 100%);
+    z-index: 1;
+  }
+  .wheel-scroll::-webkit-scrollbar { display: none; width: 0; height: 0; }
+
+  .wheel-list { position: relative; }
+
+  .wheel-item {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    height: 36px;
+    padding: 0 8px;
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--text-dim);
+    letter-spacing: 0.1px;
+    scroll-snap-align: center;
+    cursor: pointer;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    transition: color 0.22s var(--ease);
+    transform-origin: center center;
+    will-change: transform, opacity;
+    backface-visibility: hidden;
+  }
+  .wheel-item.selected {
+    color: #ffffff;
+    font-weight: 700;
+    text-shadow: 0 0 20px rgba(52,211,153,0.4);
+  }
+
+  .wheel-band {
+    position: absolute;
+    top: 50%;
+    left: 8px;
+    right: 8px;
+    height: 36px;
+    transform: translateY(-50%);
+    border-radius: 11px;
+    background: linear-gradient(180deg,
+      rgba(52,211,153,0.09) 0%,
+      rgba(52,211,153,0.15) 50%,
+      rgba(52,211,153,0.09) 100%);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    border: 1px solid rgba(52,211,153,0.28);
+    box-shadow:
+      0 0 0 1px rgba(255,255,255,0.04),
+      0 4px 20px -4px rgba(52,211,153,0.35),
+      inset 0 1px 0 rgba(255,255,255,0.12),
+      inset 0 -1px 0 rgba(0,0,0,0.15);
+    pointer-events: none;
+    z-index: 2;
+  }
+  .wheel-band::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    background: linear-gradient(180deg, rgba(255,255,255,0.06), transparent 40%);
+    pointer-events: none;
+  }
+
+  /* ============================================================
+     PLAYER CARD (Screen 2)
+     ============================================================ */
+  .player-card {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding: 18px;
+    border-radius: var(--r-md);
+    background: linear-gradient(145deg, rgba(255,255,255,0.055) 0%, rgba(255,255,255,0.02) 100%);
+    border: 1px solid var(--border);
+    margin-bottom: 20px;
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    animation: fadeUp 0.6s var(--ease-out) 0.1s both;
+  }
+
+  .avatar {
+    width: 58px; height: 58px;
+    border-radius: 50%;
+    display: grid; place-items: center;
+    font-size: 20px;
+    font-weight: 800;
+    color: #04120c;
+    letter-spacing: -0.02em;
+    flex-shrink: 0;
+    background: linear-gradient(135deg, var(--accent-lt), var(--accent));
+    box-shadow:
+      0 8px 24px -6px rgba(52,211,153,0.5),
+      inset 0 1px 0 rgba(255,255,255,0.4);
+  }
+
+  .player-meta {
+    flex: 1;
+    min-width: 0;
+  }
+  .player-meta h2 {
+    font-size: 17px;
+    font-weight: 700;
+    color: var(--text);
+    letter-spacing: -0.01em;
+    line-height: 1.2;
+    margin-bottom: 4px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  .player-meta .team-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 3px 9px;
+    border-radius: 100px;
+    background: rgba(52,211,153,0.10);
+    border: 1px solid rgba(52,211,153,0.22);
+    color: var(--accent-lt);
+    font-size: 10.5px;
+    font-weight: 600;
+    letter-spacing: 0.3px;
+  }
+
+  /* ============================================================
+     DETAIL LIST (Screen 2)
+     ============================================================ */
+  .detail-list {
+    display: flex;
+    flex-direction: column;
+    gap: 1px;
+    border-radius: var(--r-md);
+    background: rgba(255,255,255,0.03);
+    border: 1px solid var(--border);
+    overflow: hidden;
+    animation: fadeUp 0.6s var(--ease-out) 0.2s both;
+  }
+
+  .detail-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    padding: 14px 16px;
+    background: rgba(255,255,255,0.015);
+    border-bottom: 1px solid rgba(255,255,255,0.04);
+  }
+  .detail-row:last-child { border-bottom: none; }
+
+  .detail-row span {
+    font-size: 12.5px;
+    font-weight: 500;
+    color: var(--text-mute);
+    letter-spacing: 0.2px;
+    flex-shrink: 0;
+  }
+  .detail-row strong {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--text);
+    letter-spacing: -0.005em;
+    text-align: right;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  /* ============================================================
+     WHEEL GROUP (Screen 3)
+     ============================================================ */
+  .wheel-group {
+    display: grid;
+    grid-template-columns: 1.15fr 0.85fr 0.85fr;
+    gap: 8px;
+    margin-bottom: 22px;
+    animation: fadeUp 0.6s var(--ease-out) 0.1s both;
+  }
+  .wheel-wrap {
+    display: flex;
+    flex-direction: column;
+    gap: 7px;
+    min-width: 0;
+  }
+  .wheel-label {
+    font-size: 10.5px;
+    font-weight: 700;
+    color: var(--text-mute);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    padding-left: 4px;
+  }
+
+  /* ============================================================
+     INPUT (Screen 3)
+     ============================================================ */
+  .input-group {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    animation: fadeUp 0.6s var(--ease-out) 0.2s both;
+  }
+  .input-group label {
+    font-size: 10.5px;
+    font-weight: 700;
+    color: var(--text-mute);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    padding-left: 4px;
+  }
+  .input-group input {
+    width: 100%;
+    padding: 14px 16px;
+    border: 1px solid var(--border);
+    border-radius: var(--r-sm);
+    font-family: inherit;
+    font-size: 15px;
+    font-weight: 500;
+    color: #fff;
+    background: rgba(255,255,255,0.025);
+    outline: none;
+    transition: all 0.3s var(--ease);
+    letter-spacing: 0.5px;
+    box-shadow: inset 0 1px 0 rgba(255,255,255,0.04);
+  }
+  .input-group input::placeholder {
+    color: rgba(255,255,255,0.24);
+    font-weight: 400;
+    letter-spacing: 0;
+  }
+  .input-group input:hover:not(:focus) {
+    border-color: var(--border-hi);
+    background: rgba(255,255,255,0.04);
+  }
+  .input-group input:focus {
+    border-color: var(--border-act);
+    background: rgba(255,255,255,0.05);
+    box-shadow:
+      0 0 0 4px rgba(52,211,153,0.10),
+      inset 0 1px 0 rgba(255,255,255,0.08);
+  }
+  .field-error {
+    font-size: 11.5px;
+    color: var(--danger);
+    font-weight: 500;
+    letter-spacing: 0.15px;
+    padding-left: 4px;
+    max-height: 0;
+    opacity: 0;
+    overflow: hidden;
+    transition: all 0.3s var(--ease);
+  }
+  .field-error.show {
+    max-height: 30px;
+    opacity: 1;
+  }
+
+  /* ============================================================
+     REVIEW CARD (Screen 4)
+     ============================================================ */
+  .review-card {
+    border-radius: var(--r-md);
+    background: linear-gradient(145deg, rgba(255,255,255,0.055) 0%, rgba(255,255,255,0.02) 100%);
+    border: 1px solid var(--border);
+    overflow: hidden;
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    animation: fadeUp 0.6s var(--ease-out) 0.1s both;
+  }
+
+  .review-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    padding: 15px 18px;
+    border-bottom: 1px solid rgba(255,255,255,0.05);
+  }
+  .review-row:last-child { border-bottom: none; }
+
+  .review-row span {
+    font-size: 12.5px;
+    font-weight: 500;
+    color: var(--text-mute);
+    letter-spacing: 0.2px;
+  }
+  .review-row strong {
+    font-size: 13.5px;
+    font-weight: 700;
+    color: var(--text);
+    letter-spacing: -0.005em;
+    text-align: right;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    max-width: 60%;
+  }
+
+  /* ============================================================
+     SUCCESS SCREEN (Screen 5)
+     ============================================================ */
+  .screen.success-screen {
+    padding: 0;
+    display: none;
+    position: relative;
+    overflow: hidden;
+  }
+  .screen.success-screen.active {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .success-content {
+    position: relative;
+    z-index: 2;
+    text-align: center;
+    padding: 32px 24px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 16px;
+    animation: successIn 0.7s var(--spring) both;
+  }
+  @keyframes successIn {
+    from { opacity: 0; transform: scale(0.85); }
+    to   { opacity: 1; transform: scale(1); }
+  }
+
+  .success-icon {
+    width: 96px; height: 96px;
+    border-radius: 50%;
+    display: grid; place-items: center;
+    background: linear-gradient(135deg, var(--accent-lt), var(--accent));
+    color: #04120c;
+    box-shadow:
+      0 20px 50px -10px rgba(52,211,153,0.6),
+      0 0 60px rgba(52,211,153,0.3),
+      inset 0 2px 0 rgba(255,255,255,0.4);
+    animation: iconPop 0.7s var(--spring) 0.1s both;
+    position: relative;
+  }
+  .success-icon::before,
+  .success-icon::after {
+    content: "";
+    position: absolute;
+    inset: -8px;
+    border-radius: 50%;
+    border: 2px solid rgba(52,211,153,0.3);
+    animation: ripple 2s var(--ease-out) infinite;
+  }
+  .success-icon::after { animation-delay: 1s; }
+  @keyframes ripple {
+    0%   { transform: scale(0.9); opacity: 1; }
+    100% { transform: scale(1.6); opacity: 0; }
+  }
+  @keyframes iconPop {
+    0%   { transform: scale(0); }
+    60%  { transform: scale(1.15); }
+    100% { transform: scale(1); }
+  }
+  .success-icon .icon { width: 44px; height: 44px; stroke-width: 3; }
+
+  .success-content h1 {
+    font-size: 30px;
+    font-weight: 800;
+    color: var(--text);
+    letter-spacing: -0.025em;
+    line-height: 1.1;
+    background: linear-gradient(135deg, #ffffff 0%, #a7f3d0 60%, #fcd34d 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+  .success-content p {
+    font-size: 14.5px;
+    color: var(--text-dim);
+    font-weight: 400;
+    line-height: 1.5;
+    max-width: 300px;
+  }
+  .success-content p strong {
+    color: var(--accent-lt);
+    font-weight: 700;
+  }
+
+  .btn-done {
+    margin-top: 12px;
+    padding: 14px 40px;
+    border: none;
+    border-radius: var(--r-md);
+    font-family: inherit;
+    font-size: 14.5px;
+    font-weight: 700;
+    color: #04120c;
+    background: linear-gradient(135deg, var(--accent-lt) 0%, var(--accent) 60%, var(--gold) 100%);
+    cursor: pointer;
+    box-shadow:
+      0 14px 32px -8px rgba(52,211,153,0.55),
+      inset 0 1px 0 rgba(255,255,255,0.5);
+    transition: transform 0.3s var(--ease);
+    letter-spacing: 0.2px;
+  }
+  .btn-done:hover { transform: translateY(-2px); }
+  .btn-done:active { transform: translateY(0) scale(0.97); }
+
+  /* Confetti */
+  .confetti {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    overflow: hidden;
+    z-index: 1;
+  }
+  .confetti-piece {
+    position: absolute;
+    top: -20px;
+    border-radius: 2px;
+    animation: confettiFall linear forwards;
+    opacity: 0;
+    will-change: transform, opacity;
+  }
+  @keyframes confettiFall {
+    0%   { transform: translate3d(0, 0, 0) rotate(0deg); opacity: 1; }
+    100% { transform: translate3d(var(--drift, 0px), 110vh, 0) rotate(720deg); opacity: 0; }
+  }
+
+  /* ============================================================
+     BOTTOM BAR
+     ============================================================ */
+  .bottom-bar {
+    flex-shrink: 0;
+    padding: 14px 16px;
+    padding-bottom: calc(14px + env(safe-area-inset-bottom));
+    background: linear-gradient(180deg, transparent 0%, rgba(3,10,7,0.85) 30%, #030a07 100%);
+    backdrop-filter: blur(20px) saturate(180%);
+    -webkit-backdrop-filter: blur(20px) saturate(180%);
+    z-index: 40;
+    transition: transform 0.4s var(--ease), opacity 0.3s var(--ease);
+  }
+  .bottom-bar.hidden {
+    transform: translateY(100%);
+    opacity: 0;
+    pointer-events: none;
+  }
+
+  .cta {
+    position: relative;
+    width: 100%;
+    padding: 16px 20px;
+    border: none;
+    border-radius: var(--r-md);
+    font-family: inherit;
+    font-size: 15px;
+    font-weight: 700;
+    letter-spacing: 0.2px;
+    color: #04120c;
+    background: linear-gradient(135deg, var(--accent-lt) 0%, var(--accent) 60%, var(--gold) 100%);
+    box-shadow:
+      0 14px 40px -8px rgba(52,211,153,0.55),
+      0 4px 14px -4px rgba(251,191,36,0.3),
+      inset 0 1px 0 rgba(255,255,255,0.5);
+    cursor: pointer;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    transition: transform 0.32s var(--ease), box-shadow 0.32s var(--ease), opacity 0.3s var(--ease);
+    will-change: transform;
+  }
+  .cta::before {
+    content: "";
+    position: absolute;
+    top: 0; left: -120%;
+    width: 70%; height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.55), transparent);
+    transform: skewX(-20deg);
+    transition: left 0.9s var(--ease);
+    pointer-events: none;
+  }
+  .cta:hover:not(:disabled)::before { left: 140%; }
+  .cta:hover:not(:disabled) {
+    transform: translate3d(0, -2px, 0);
+    box-shadow:
+      0 20px 50px -8px rgba(52,211,153,0.7),
+      0 6px 20px -4px rgba(251,191,36,0.35),
+      inset 0 1px 0 rgba(255,255,255,0.6);
+  }
+  .cta:active:not(:disabled) {
+    transform: translate3d(0, 0, 0) scale(0.985);
+    transition-duration: 0.1s;
+  }
+  .cta:disabled {
+    opacity: 0.35;
+    cursor: not-allowed;
+    filter: saturate(0.5);
+  }
+  .cta.pulse-once {
+    animation: ctaPulse 0.6s var(--ease);
+  }
+  @keyframes ctaPulse {
+    0%, 100% { transform: scale(1); }
+    50%      { transform: scale(1.02); }
+  }
+
+  .btn-loader { display: none; align-items: center; gap: 9px; }
+  .cta.loading .btn-text { display: none; }
+  .cta.loading .btn-loader { display: flex; }
+  .spinner {
+    width: 16px; height: 16px;
+    border: 2.5px solid rgba(4,18,12,0.25);
+    border-top-color: #04120c;
+    border-radius: 50%;
+    animation: spin 0.7s linear infinite;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  /* ============================================================
+     RESPONSIVE
+     ============================================================ */
+  @media (min-width: 461px) {
+    .app {
+      border-left: 1px solid rgba(255,255,255,0.04);
+      border-right: 1px solid rgba(255,255,255,0.04);
+    }
+  }
+  @media (max-width: 380px) {
+    .screen-head h1 { font-size: 24px; }
+    .team-name { font-size: 12.5px; }
+    .crest { width: 38px; height: 38px; }
+    .wheel-group { grid-template-columns: 1fr 0.8fr 0.8fr; gap: 6px; }
+    .wheel-item { font-size: 12.5px; }
+    .avatar { width: 52px; height: 52px; font-size: 18px; }
+    .success-icon { width: 84px; height: 84px; }
+    .success-content h1 { font-size: 26px; }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+    }
+  }
+</style>
+</head>
+<body>
+
+<div class="app">
+
+  <!-- APP BAR -->
+  <header class="app-bar">
+    <button class="icon-btn" id="backBtn" aria-label="Back" disabled>
+      <svg class="icon" viewBox="0 0 24 24">
+        <polyline points="15 18 9 12 15 6"/>
+      </svg>
+    </button>
+    <div class="app-title">
+      <span class="t-main">Registration</span>
+      <span class="t-sub">House Cricket</span>
+    </div>
+    <div class="step-pill" id="stepPill">1 / 4</div>
+  </header>
+
+  <!-- PROGRESS -->
+  <div class="progress-track">
+    <div class="progress-fill" id="progressFill"></div>
+  </div>
+
+  <!-- SCREENS -->
+  <div class="screens" id="screens">
+
+    <!-- SCREEN 1: TEAM & PLAYER -->
+    <section class="screen active" data-step="1">
+      <div class="screen-head">
+        <span class="eyebrow">Step 1</span>
+        <h1>Choose your <span class="accent">team</span></h1>
+        <p>Pick the team you play for this season.</p>
+      </div>
+
+      <div class="team-grid">
+        <button type="button" class="team-card" data-team="Tigers" aria-label="Select Dhaka Tigers">
+          <div class="crest">
+            <svg class="icon" viewBox="0 0 24 24">
+              <path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.072-2.143-.224-4.054 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.153.433-2.294 1-3a2.5 2.5 0 0 0 2.5 2.5z"/>
+            </svg>
+          </div>
+          <div class="team-meta">
+            <span class="team-name">Dhaka Tigers</span>
+            <span class="team-count">3 players</span>
+          </div>
+        </button>
+
+        <button type="button" class="team-card" data-team="Royals" aria-label="Select Mirpur Royals">
+          <div class="crest">
+            <svg class="icon" viewBox="0 0 24 24">
+              <path d="M2 20h20M4 20l2-8 4 4 2-8 2 8 4-4 2 8"/>
+            </svg>
+          </div>
+          <div class="team-meta">
+            <span class="team-name">Mirpur Royals</span>
+            <span class="team-count">2 players</span>
+          </div>
+        </button>
+
+        <button type="button" class="team-card" data-team="Warriors" aria-label="Select Uttara Warriors">
+          <div class="crest">
+            <svg class="icon" viewBox="0 0 24 24">
+              <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+              <path d="M12 8v6M9 11h6" stroke-width="1.5"/>
+            </svg>
+          </div>
+          <div class="team-meta">
+            <span class="team-name">Uttara Warriors</span>
+            <span class="team-count">2 players</span>
+          </div>
+        </button>
+
+        <button type="button" class="team-card" data-team="Kings" aria-label="Select Gulshan Kings">
+          <div class="crest">
+            <svg class="icon" viewBox="0 0 24 24">
+              <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>
+            </svg>
+          </div>
+          <div class="team-meta">
+            <span class="team-name">Gulshan Kings</span>
+            <span class="team-count">2 players</span>
+          </div>
+        </button>
+      </div>
+
+      <div class="player-section" id="playerSection">
+        <div class="section-label">Now pick your name</div>
+        <div class="wheel" id="playerWheel" role="listbox" tabindex="0" aria-label="Select player"></div>
+      </div>
+    </section>
+
+    <!-- SCREEN 2: VERIFY DETAILS -->
+    <section class="screen" data-step="2">
+      <div class="screen-head">
+        <span class="eyebrow">Step 2</span>
+        <h1>Verify your <span class="accent">details</span></h1>
+        <p>Pulled from the club database. Make sure it's you.</p>
+      </div>
+
+      <div class="player-card">
+        <div class="avatar" id="avatar">?</div>
+        <div class="player-meta">
+          <h2 id="vName">—</h2>
+          <span class="team-badge" id="vTeam">—</span>
+        </div>
+      </div>
+
+      <div class="detail-list">
+        <div class="detail-row">
+          <span>Father's Name</span>
+          <strong id="vFather">—</strong>
+        </div>
+        <div class="detail-row">
+          <span>Mobile</span>
+          <strong id="vMobile">—</strong>
+        </div>
+        <div class="detail-row">
+          <span>Address</span>
+          <strong id="vAddress">—</strong>
+        </div>
+      </div>
+    </section>
+
+    <!-- SCREEN 3: PREFERENCES -->
+    <section class="screen" data-step="3">
+      <div class="screen-head">
+        <span class="eyebrow">Step 3</span>
+        <h1>Your <span class="accent">preferences</span></h1>
+        <p>Scroll each wheel. Pick your position and jersey.</p>
+      </div>
+
+      <div class="wheel-group">
+        <div class="wheel-wrap">
+          <span class="wheel-label">Position</span>
+          <div class="wheel compact" id="positionWheel" role="listbox" tabindex="0" aria-label="Select position"></div>
+        </div>
+        <div class="wheel-wrap">
+          <span class="wheel-label">Size</span>
+          <div class="wheel compact" id="sizeWheel" role="listbox" tabindex="0" aria-label="Select size"></div>
+        </div>
+        <div class="wheel-wrap">
+          <span class="wheel-label">Number</span>
+          <div class="wheel compact" id="numberWheel" role="listbox" tabindex="0" aria-label="Select number"></div>
+        </div>
+      </div>
+
+      <div class="input-group">
+        <label for="whatsapp">WhatsApp Number</label>
+        <input type="tel" id="whatsapp" inputmode="numeric" maxlength="11"
+               placeholder="01XXXXXXXXX" autocomplete="tel-national">
+        <span class="field-error" id="waError" role="alert"></span>
+      </div>
+    </section>
+
+    <!-- SCREEN 4: REVIEW -->
+    <section class="screen" data-step="4">
+      <div class="screen-head">
+        <span class="eyebrow">Step 4</span>
+        <h1>Review &amp; <span class="accent">confirm</span></h1>
+        <p>Double-check. Then register your spot.</p>
+      </div>
+
+      <div class="review-card">
+        <div class="review-row">
+          <span>Team</span>
+          <strong id="rTeam">—</strong>
+        </div>
+        <div class="review-row">
+          <span>Player</span>
+          <strong id="rPlayer">—</strong>
+        </div>
+        <div class="review-row">
+          <span>Position</span>
+          <strong id="rPosition">—</strong>
+        </div>
+        <div class="review-row">
+          <span>Jersey</span>
+          <strong id="rJersey">—</strong>
+        </div>
+        <div class="review-row">
+          <span>WhatsApp</span>
+          <strong id="rWhatsapp">—</strong>
+        </div>
+      </div>
+    </section>
+
+    <!-- SCREEN 5: SUCCESS -->
+    <section class="screen success-screen" data-step="5">
+      <div class="confetti" id="confetti"></div>
+      <div class="success-content">
+        <div class="success-icon">
+          <svg class="icon" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
+        </div>
+        <h1>You're in!</h1>
+        <p id="successMsg">Registration confirmed. Your captain has been notified.</p>
+        <button type="button" class="btn-done" id="doneBtn">Done</button>
+      </div>
+    </section>
+
+  </div>
+
+  <!-- BOTTOM BAR -->
+  <div class="bottom-bar" id="bottomBar">
+    <button type="button" class="cta" id="ctaBtn" disabled>
+      <span class="btn-text">Continue</span>
+      <span class="btn-loader"><span class="spinner"></span> Registering...</span>
+    </button>
+  </div>
+
+</div>
+
+<script>
+  'use strict';
+
+  /* ============================================================
+     WHEEL PICKER (iOS 26 style)
+     ============================================================ */
+  class WheelPicker {
+    constructor(container, options, config = {}) {
+      this.container = container;
+      this.options = options.map(o =>
+        typeof o === 'string' ? { value: o, label: o } : o
+      );
+      this.itemHeight = config.itemHeight || 36;
+      this.visibleCount = config.visibleCount || 5;
+      this.onChange = config.onChange || (() => {});
+      this.selectedIndex = 0;
+      this._rafId = null;
+      this._settleTimer = null;
+      this.build();
+    }
+
+    escape(str) {
+      const d = document.createElement('div');
+      d.textContent = String(str);
+      return d.innerHTML;
+    }
+
+    build() {
+      const height = this.itemHeight * this.visibleCount;
+      const pad = (height - this.itemHeight) / 2;
+
+      this.container.style.height = height + 'px';
+      this.container.innerHTML = `
+        <div class="wheel-scroll">
+          <div class="wheel-list" style="padding:${pad}px 0;">
+            ${this.options.map((o, i) =>
+              `<div class="wheel-item" data-index="${i}">${this.escape(o.label)}</div>`
+            ).join('')}
+          </div>
+        </div>
+        <div class="wheel-band"></div>
+      `;
+
+      this.scrollEl = this.container.querySelector('.wheel-scroll');
+      this.listEl = this.container.querySelector('.wheel-list');
+      this.items = Array.from(this.listEl.children);
+      this.height = height;
+      this.pad = pad;
+
+      this.attachEvents();
+      this.select(0, false);
+      requestAnimationFrame(() => this.updateVisuals());
+    }
+
+    attachEvents() {
+      this.scrollEl.addEventListener('scroll', () => {
+        if (this._rafId === null) {
+          this._rafId = requestAnimationFrame(() => {
+            this.updateVisuals();
+            this._rafId = null;
+          });
+        }
+        clearTimeout(this._settleTimer);
+        this._settleTimer = setTimeout(() => this.settle(), 90);
+      }, { passive: true });
+
+      this.listEl.addEventListener('click', (e) => {
+        const item = e.target.closest('.wheel-item');
+        if (!item) return;
+        const idx = Number(item.dataset.index);
+        if (!isNaN(idx)) this.select(idx);
+      });
+
+      this.container.addEventListener('keydown', (e) => {
+        if (e.key === 'ArrowDown') {
+          e.preventDefault();
+          this.select(Math.min(this.options.length - 1, this.selectedIndex + 1));
+        } else if (e.key === 'ArrowUp') {
+          e.preventDefault();
+          this.select(Math.max(0, this.selectedIndex - 1));
+        }
+      });
+    }
+
+    updateVisuals() {
+      const scrollTop = this.scrollEl.scrollTop;
+      const center = scrollTop + this.height / 2;
+      const halfH = this.height / 2;
+      const itemH = this.itemHeight;
+      const pad = this.pad;
+
+      for (let i = 0; i < this.items.length; i++) {
+        const item = this.items[i];
+        const itemCenter = pad + i * itemH + itemH / 2;
+        const delta = itemCenter - center;
+        const absDelta = Math.abs(delta);
+
+        if (absDelta > halfH + itemH) continue;
+
+        const ratio = delta / halfH;
+        const absRatio = Math.abs(ratio);
+
+        const rot = ratio * 32;
+        const scale = Math.max(0.72, 1 - absRatio * 0.28);
+        const op = Math.max(0.12, 1 - absRatio * 0.92);
+
+        item.style.transform = `rotateX(${rot}deg) scale(${scale})`;
+        item.style.opacity = op;
+      }
+    }
+
+    settle() {
+      const scrollTop = this.scrollEl.scrollTop;
+      const idx = Math.round(scrollTop / this.itemHeight);
+      const clamped = Math.max(0, Math.min(this.options.length - 1, idx));
+
+      const target = clamped * this.itemHeight;
+      if (Math.abs(scrollTop - target) > 2) {
+        this.scrollEl.scrollTo({ top: target, behavior: 'smooth' });
+      }
+
+      if (clamped !== this.selectedIndex) {
+        this.selectedIndex = clamped;
+        this.items.forEach((it, i) => it.classList.toggle('selected', i === clamped));
+        if (navigator.vibrate) navigator.vibrate(8);
+        this.onChange(this.options[clamped].value, clamped);
+      } else {
+        this.items.forEach((it, i) => it.classList.toggle('selected', i === clamped));
+      }
+    }
+
+    select(index, smooth = true) {
+      const i = Math.max(0, Math.min(this.options.length - 1, index));
+
+      if (smooth) {
+        this.scrollEl.scrollTo({ top: i * this.itemHeight, behavior: 'smooth' });
+      } else {
+        this.scrollEl.style.scrollSnapType = 'none';
+        this.scrollEl.scrollTop = i * this.itemHeight;
+        requestAnimationFrame(() => { this.scrollEl.style.scrollSnapType = ''; });
+      }
+
+      this.selectedIndex = i;
+      this.items.forEach((it, idx) => it.classList.toggle('selected', idx === i));
+
+      if (!smooth) requestAnimationFrame(() => this.updateVisuals());
+    }
+
+    setOptions(newOptions, config = {}) {
+      this.options = newOptions.map(o =>
+        typeof o === 'string' ? { value: o, label: o } : o
+      );
+      this.listEl.innerHTML = this.options.map((o, i) =>
+        `<div class="wheel-item" data-index="${i}">${this.escape(o.label)}</div>`
+      ).join('');
+      this.items = Array.from(this.listEl.children);
+      this.selectedIndex = 0;
+      this.select(0, false);
+      if (config.silent !== true && this.options[0]) {
+        this.onChange(this.options[0].value, 0);
+      }
+    }
+
+    refresh() {
+      this.scrollEl.style.scrollSnapType = 'none';
+      this.scrollEl.scrollTop = this.selectedIndex * this.itemHeight;
+      requestAnimationFrame(() => {
+        this.scrollEl.style.scrollSnapType = '';
+        this.updateVisuals();
+      });
+    }
+
+    getValue() { return this.options[this.selectedIndex]?.value ?? ''; }
+  }
+
+  /* ============================================================
+     CLUB DATABASE
+     ============================================================ */
+  const clubDatabase = {
+    "Tigers": [
+      { id:1, name:"Rahim Ahmed",  father:"Karim Ahmed",    mobile:"01711111111", address:"Mirpur-10, Dhaka" },
+      { id:2, name:"Sakib Hasan",  father:"Jalal Hasan",    mobile:"01722222222", address:"Kazipara, Dhaka" },
+      { id:3, name:"Tanvir Islam", father:"Moinul Islam",   mobile:"01733333333", address:"Shewrapara, Dhaka" }
+    ],
+    "Royals": [
+      { id:4, name:"Fahim Khan",   father:"Rashid Khan",    mobile:"01811111111", address:"Pallabi, Dhaka" },
+      { id:5, name:"Nayeem Uddin", father:"Aziz Uddin",     mobile:"01822222222", address:"Mirpur-1, Dhaka" }
+    ],
+    "Warriors": [
+      { id:6, name:"Arif Hossain", father:"Shahid Hossain", mobile:"01911111111", address:"Sector-7, Uttara" },
+      { id:7, name:"Riyad Mia",    father:"Salim Mia",      mobile:"01922222222", address:"Airport, Uttara" }
+    ],
+    "Kings": [
+      { id:8, name:"Imran Sheikh", father:"Habib Sheikh",   mobile:"01611111111", address:"Banani, Dhaka" },
+      { id:9, name:"Shuvo Das",    father:"Nitin Das",      mobile:"01622222222", address:"Gulshan-2, Dhaka" }
+    ]
+  };
+
+  /* ============================================================
+     DOM
+     ============================================================ */
+  const $ = id => document.getElementById(id);
+  const screensEl = $('screens');
+  const ctaBtn = $('ctaBtn');
+  const backBtn = $('backBtn');
+  const bottomBar = $('bottomBar');
+  const stepPill = $('stepPill');
+  const progressFill = $('progressFill');
+  const waInput = $('whatsapp');
+  const waError = $('waError');
+
+  /* ============================================================
+     STATE
+     ============================================================ */
+  const state = {
+    step: 1,
+    team: '',
+    playerId: '',
+    player: null,
+    position: '',
+    size: '',
+    number: '10',
+    whatsapp: ''
+  };
+
+  /* ============================================================
+     WHEELS
+     ============================================================ */
+  const playerWheel = new WheelPicker($('playerWheel'), [
+    { value: '', label: 'Select team first' }
+  ], { visibleCount: 5, onChange: onPlayerSelect });
+
+  const positionWheel = new WheelPicker($('positionWheel'), [
+    { value: '',              label: '—' },
+    { value: 'Batsman',       label: 'Batsman' },
+    { value: 'Bowler',        label: 'Bowler' },
+    { value: 'Wicket Keeper', label: 'Keeper' },
+    { value: 'All Rounder',   label: 'All-rounder' }
+  ], { visibleCount: 3, onChange: v => { state.position = v; updateCTAState(); } });
+
+  const sizeWheel = new WheelPicker($('sizeWheel'), [
+    { value: '',    label: '—' },
+    { value: 'S',   label: 'S' },
+    { value: 'M',   label: 'M' },
+    { value: 'L',   label: 'L' },
+    { value: 'XL',  label: 'XL' },
+    { value: 'XXL', label: 'XXL' }
+  ], { visibleCount: 3, onChange: v => { state.size = v; updateCTAState(); } });
+
+  const numberOptions = [];
+  for (let i = 0; i < 100; i++) numberOptions.push({ value: String(i), label: String(i) });
+  const numberWheel = new WheelPicker($('numberWheel'), numberOptions, {
+    visibleCount: 3,
+    onChange: v => { state.number = v; updateCTAState(); }
+  });
+  numberWheel.select(10, false);
+  state.number = '10';
+
+  /* ============================================================
+     HELPERS
+     ============================================================ */
+  function getInitials(name) {
+    return (name || '?').split(' ').map(w => w[0]).slice(0, 2).join('').toUpperCase();
+  }
+
+  function getAvatarGradient(name) {
+    const gradients = [
+      'linear-gradient(135deg, #34d399, #10b981)',
+      'linear-gradient(135deg, #fbbf24, #f59e0b)',
+      'linear-gradient(135deg, #7dd3fc, #38bdf8)',
+      'linear-gradient(135deg, #c084fc, #a855f7)',
+      'linear-gradient(135deg, #f472b6, #ec4899)',
+      'linear-gradient(135deg, #f97316, #ea580c)'
+    ];
+    let hash = 0;
+    for (let i = 0; i < name.length; i++) {
+      hash = name.charCodeAt(i) + ((hash << 5) - hash);
+    }
+    return gradients[Math.abs(hash) % gradients.length];
+  }
+
+  /* ============================================================
+     TEAM SELECTION
+     ============================================================ */
+  document.querySelectorAll('.team-card').forEach(card => {
+    card.addEventListener('click', () => {
+      if (navigator.vibrate) navigator.vibrate(12);
+      selectTeam(card.dataset.team);
+    });
+  });
+
+  function selectTeam(teamName) {
+    if (state.team === teamName) return;
+
+    state.team = teamName;
+    state.playerId = '';
+    state.player = null;
+
+    // Update team cards
+    document.querySelectorAll('.team-card').forEach(card => {
+      const isSel = card.dataset.team === teamName;
+      card.classList.toggle('selected', isSel);
+      card.setAttribute('aria-selected', isSel ? 'true' : 'false');
+    });
+
+    // Populate player wheel
+    const players = clubDatabase[teamName] || [];
+    playerWheel.setOptions([
+      { value: '', label: 'Choose your name' },
+      ...players.map(p => ({ value: String(p.id), label: p.name }))
+    ], { silent: true });
+
+    // Show player section
+    const playerSection = $('playerSection');
+    playerSection.classList.add('visible');
+    setTimeout(() => playerWheel.refresh(), 50);
+
+    updateCTAState();
+  }
+
+  /* ============================================================
+     PLAYER SELECTION
+     ============================================================ */
+  function onPlayerSelect(playerId) {
+    if (!playerId) {
+      state.playerId = '';
+      state.player = null;
+      updateCTAState();
+      return;
+    }
+
+    const players = clubDatabase[state.team] || [];
+    const player = players.find(p => String(p.id) === String(playerId));
+    if (!player) return;
+
+    state.playerId = playerId;
+    state.player = player;
+
+    // Populate screen 2
+    $('vName').textContent = player.name;
+    $('vTeam').textContent = state.team;
+
+    const avatar = $('avatar');
+    avatar.textContent = getInitials(player.name);
+    avatar.style.background = getAvatarGradient(player.name);
+
+    $('vFather').textContent = player.father;
+    $('vMobile').textContent = player.mobile;
+    $('vAddress').textContent = player.address;
+
+    updateCTAState();
+  }
+
+  /* ============================================================
+     NAVIGATION
+     ============================================================ */
+  function goToStep(n, direction = 'forward') {
+    if (n === state.step) return;
+
+    const current = document.querySelector('.screen.active');
+    const target = document.querySelector(`.screen[data-step="${n}"]`);
+    if (!target) return;
+
+    if (current) current.classList.remove('active', 'slide-right', 'slide-left');
+    target.classList.add('active');
+    target.classList.add(direction === 'forward' ? 'slide-right' : 'slide-left');
+
+    screensEl.scrollTop = 0;
+    state.step = n;
+    updateUI();
+
+    // Refresh wheels on step 3
+    if (n === 3) {
+      requestAnimationFrame(() => {
+        requestAnimationFrame(() => {
+          positionWheel.refresh();
+          sizeWheel.refresh();
+          numberWheel.refresh();
+        });
+      });
+    }
+
+    // Populate review on step 4
+    if (n === 4) populateReview();
+  }
+
+  function populateReview() {
+    $('rTeam').textContent = state.team || '—';
+    $('rPlayer').textContent = state.player?.name || '—';
+    $('rPosition').textContent = state.position || '—';
+    $('rJersey').textContent = (state.size && state.number !== '') ? `${state.size} · #${state.number}` : '—';
+    $('rWhatsapp').textContent = state.whatsapp || '—';
+  }
+
+  /* ============================================================
+     UI UPDATE
+     ============================================================ */
+  function updateUI() {
+    // Progress
+    const pct = state.step <= 4 ? (state.step / 4) * 100 : 100;
+    progressFill.style.width = pct + '%';
+
+    // Step pill
+    if (state.step <= 4) {
+      stepPill.textContent = `${state.step} / 4`;
+      stepPill.classList.remove('complete');
+    } else {
+      stepPill.textContent = '✓ Done';
+      stepPill.classList.add('complete');
+    }
+
+    // Back button
+    backBtn.disabled = state.step === 1 || state.step === 5;
+
+    // Bottom bar visibility
+    if (state.step === 5) {
+      bottomBar.classList.add('hidden');
+    } else {
+      bottomBar.classList.remove('hidden');
+    }
+
+    // CTA text
+    const ctaText = {
+      1: 'Continue',
+      2: 'Continue',
+      3: 'Review',
+      4: 'Register Player'
+    };
+    ctaBtn.querySelector('.btn-text').textContent = ctaText[state.step] || 'Continue';
+
+    updateCTAState();
+  }
+
+  function updateCTAState() {
+    let enabled = false;
+
+    if (state.step === 1) {
+      enabled = !!(state.team && state.playerId);
+    } else if (state.step === 2) {
+      enabled = !!state.player;
+    } else if (state.step === 3) {
+      enabled = !!(state.position && state.size && state.whatsapp && /^01[0-9]{9}$/.test(state.whatsapp));
+    } else if (state.step === 4) {
+      enabled = true;
+    }
+
+    const wasDisabled = ctaBtn.disabled;
+    ctaBtn.disabled = !enabled;
+
+    if (wasDisabled && enabled) {
+      ctaBtn.classList.add('pulse-once');
+      setTimeout(() => ctaBtn.classList.remove('pulse-once'), 650);
+    }
+  }
+
+  /* ============================================================
+     WHATSAPP INPUT
+     ============================================================ */
+  waInput.addEventListener('input', (e) => {
+    const cleaned = e.target.value.replace(/\D/g, '').slice(0, 11);
+    if (cleaned !== e.target.value) e.target.value = cleaned;
+    state.whatsapp = cleaned;
+    waError.classList.remove('show');
+    waError.textContent = '';
+    updateCTAState();
+  });
+
+  /* ============================================================
+     BACK BUTTON
+     ============================================================ */
+  backBtn.addEventListener('click', () => {
+    if (state.step > 1 && state.step <= 4) {
+      goToStep(state.step - 1, 'backward');
+    }
+  });
+
+  /* ============================================================
+     CTA BUTTON
+     ============================================================ */
+  let isSubmitting = false;
+
+  ctaBtn.addEventListener('click', async () => {
+    if (isSubmitting) return;
+
+    if (state.step === 1) {
+      if (!state.team || !state.playerId) return;
+      goToStep(2, 'forward');
+    } else if (state.step === 2) {
+      goToStep(3, 'forward');
+    } else if (state.step === 3) {
+      // Validate WhatsApp before proceeding
+      const wa = state.whatsapp.trim();
+      if (!wa) {
+        waError.textContent = 'Enter your WhatsApp number';
+        waError.classList.add('show');
+        if (navigator.vibrate) navigator.vibrate([30, 20, 30]);
+        return;
+      }
+      if (!/^01[0-9]{9}$/.test(wa)) {
+        waError.textContent = 'Must be 11 digits starting with 01';
+        waError.classList.add('show');
+        if (navigator.vibrate) navigator.vibrate([30, 20, 30]);
+        return;
+      }
+      goToStep(4, 'forward');
+    } else if (state.step === 4) {
+      await submitRegistration();
+    }
+  });
+
+  /* ============================================================
+     SUBMIT
+     ============================================================ */
+  async function submitRegistration() {
+    isSubmitting = true;
+    ctaBtn.disabled = true;
+    ctaBtn.classList.add('loading');
+
+    const formData = {
+      team:         state.team,
+      playerId:     state.playerId,
+      playerName:   state.player?.name,
+      fatherName:   state.player?.father,
+      mobile:       state.player?.mobile,
+      address:      state.player?.address,
+      position:     state.position,
+      jerseySize:   state.size,
+      jerseyNumber: state.number,
+      whatsapp:     state.whatsapp
+    };
+    console.log('Submitting:', formData);
+
+    try {
+      /* ==== BACKEND ====
+      const res = await fetch('/api/player-register', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(formData)
+      });
+      if (!res.ok) throw new Error('Registration failed');
+      ================= */
+
+      await new Promise(r => setTimeout(r, 1100));
+
+      if (navigator.vibrate) navigator.vibrate([50, 40, 100]);
+
+      // Update success message with player name
+      $('successMsg').innerHTML =
+        `Registration confirmed for <strong>${state.player?.name || ''}</strong>. Your captain has been notified.`;
+
+      // Go to success screen
+      goToStep(5, 'forward');
+      createConfetti();
+
+    } catch (err) {
+      console.error(err);
+      alert('Something went wrong. Please try again.');
+      ctaBtn.disabled = false;
+    } finally {
+      isSubmitting = false;
+      ctaBtn.classList.remove('loading');
+    }
+  }
+
+  /* ============================================================
+     CONFETTI
+     ============================================================ */
+  function createConfetti() {
+    const container = $('confetti');
+    container.innerHTML = '';
+
+    const colors = ['#10b981', '#34d399', '#fbbf24', '#7dd3fc', '#f472b6', '#a78bfa', '#f97316'];
+
+    for (let i = 0; i < 60; i++) {
+      const piece = document.createElement('div');
+      piece.className = 'confetti-piece';
+      piece.style.left = Math.random() * 100 + '%';
+      piece.style.width = (5 + Math.random() * 7) + 'px';
+      piece.style.height = (8 + Math.random() * 10) + 'px';
+      piece.style.background = colors[Math.floor(Math.random() * colors.length)];
+      piece.style.animationDelay = (Math.random() * 1.5) + 's';
+      piece.style.animationDuration = (2.5 + Math.random() * 2) + 's';
+      piece.style.setProperty('--drift', (Math.random() * 200 - 100) + 'px');
+      piece.style.borderRadius = Math.random() > 0.5 ? '50%' : '2px';
+      piece.style.transform = `rotate(${Math.random() * 360}deg)`;
+      container.appendChild(piece);
+    }
+  }
+
+  /* ============================================================
+     DONE / RESET
+     ============================================================ */
+  $('doneBtn').addEventListener('click', () => {
+    resetAll();
+    goToStep(1, 'backward');
+  });
+
+  function resetAll() {
+    // Reset state
+    state.team = '';
+    state.playerId = '';
+    state.player = null;
+    state.position = '';
+    state.size = '';
+    state.number = '10';
+    state.whatsapp = '';
+
+    // Reset team cards
+    document.querySelectorAll('.team-card').forEach(card => {
+      card.classList.remove('selected');
+      card.removeAttribute('aria-selected');
+    });
+
+    // Hide player section
+    $('playerSection').classList.remove('visible');
+
+    // Reset player wheel
+    playerWheel.setOptions([{ value: '', label: 'Select team first' }], { silent: true });
+
+    // Reset screen 2
+    $('vName').textContent = '—';
+    $('vTeam').textContent = '—';
+    $('avatar').textContent = '?';
+    $('avatar').style.background = 'linear-gradient(135deg, #34d399, #10b981)';
+    $('vFather').textContent = '—';
+    $('vMobile').textContent = '—';
+    $('vAddress').textContent = '—';
+
+    // Reset wheels on screen 3
+    positionWheel.select(0, false);
+    sizeWheel.select(0, false);
+    numberWheel.select(10, false);
+
+    // Reset WhatsApp
+    waInput.value = '';
+    waError.classList.remove('show');
+    waError.textContent = '';
+
+    // Clear confetti
+    $('confetti').innerHTML = '';
+
+    updateCTAState();
+  }
+
+  /* ============================================================
+     INIT
+     ============================================================ */
+  updateUI();
+</script>
+
+</body>
+</html>
